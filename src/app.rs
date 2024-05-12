@@ -5,12 +5,16 @@ use winit::{
     event_loop::ActiveEventLoop
 };
 
+use crate::graphics_state::GraphicsState;
+
 #[derive(Default)]
-pub struct GvizorApp {
-    window: Option<Window>
+pub struct GvizorApp<'a> {
+    window: Option<Window>,
+    graphics: Option<GraphicsState<'a>>
 }
 
-impl ApplicationHandler for GvizorApp {
+impl<'a> ApplicationHandler for GvizorApp<'a> {
+
     fn resumed(&mut self, event_loop: &winit::event_loop::ActiveEventLoop) {
         self.window = Some(event_loop.create_window(Window::default_attributes()).unwrap());
     }
