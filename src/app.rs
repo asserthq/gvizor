@@ -7,12 +7,12 @@ use winit::{
     event_loop::ActiveEventLoop
 };
 
-use crate::graphics_state::GraphicsState;
+use crate::graphics_context::WgpuContext;
 
 #[derive(Default)]
 pub struct GvizorApp<'app> {
     window: Option<Arc<Window>>,
-    graphics: Option<GraphicsState<'app>>
+    graphics: Option<WgpuContext<'app>>
 }
 
 impl<'app> ApplicationHandler for GvizorApp<'app> {
@@ -21,7 +21,7 @@ impl<'app> ApplicationHandler for GvizorApp<'app> {
         self.window = Some(Arc::new(
             event_loop.create_window(Window::default_attributes()).unwrap()
         ));
-        self.graphics = Some(GraphicsState::from_window(self.window.as_ref().unwrap()));
+        self.graphics = Some(WgpuContext::from_window(self.window.as_ref().unwrap()));
     }
 
     fn window_event(&mut self, event_loop: &ActiveEventLoop, _window_id: WindowId, event: WindowEvent) {

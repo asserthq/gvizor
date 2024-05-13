@@ -1,14 +1,14 @@
 use std::sync::Arc;
 use winit::window::Window;
 
-pub struct GraphicsState<'wnd> {
+pub struct WgpuContext<'wnd> {
     surface: wgpu::Surface<'wnd>,
     device: wgpu::Device,
     queue: wgpu::Queue,
     config: wgpu::SurfaceConfiguration,
 }
 
-impl<'wnd> GraphicsState<'wnd> {
+impl<'wnd> WgpuContext<'wnd> {
 
     pub fn from_window(window: &Arc<Window>) -> Self {
         let instance = wgpu::Instance::new(wgpu::InstanceDescriptor::default());

@@ -3,7 +3,7 @@ use winit::event_loop::{ControlFlow, EventLoop};
 use crate::app::GvizorApp;
 
 pub mod app;
-pub mod graphics_state;
+pub mod graphics_context;
 
 #[tokio::main]
 async fn main() {
