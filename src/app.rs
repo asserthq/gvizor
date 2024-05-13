@@ -38,6 +38,7 @@ impl<'app> ApplicationHandler for GvizorApp<'app> {
             }
 
             WindowEvent::Resized(size) => self.resize(size),
+            WindowEvent::Moved(_) => self.window.as_ref().unwrap().request_redraw(),
 
             _ => ()
         }
