@@ -4,7 +4,8 @@ use winit::{
     application::ApplicationHandler, 
     window::{Window, WindowId},
     event::*,
-    event_loop::ActiveEventLoop
+    event_loop::ActiveEventLoop,
+    dpi
 };
 
 use crate::graphics_context::WgpuContext;
@@ -36,8 +37,21 @@ impl<'app> ApplicationHandler for GvizorApp<'app> {
                 }
             }
 
+            WindowEvent::Resized(size) => self.resize(size),
+
             _ => ()
         }
     }
 }
 
+impl<'app> GvizorApp<'app> {
+
+    fn resize(&mut self, size: dpi::PhysicalSize<u32>) {
+        if size.width > 0 && size.height > 0 {
+            match self.graphics.as_mut() {
+                Some(graphics) => graphics.resize(size.width, size.height),
+                None => ()
+            }
+        }
+    }
+}

@@ -39,4 +39,10 @@ impl<'wnd> WgpuContext<'wnd> {
             config
         }
     }
+
+    pub fn resize(&mut self, width: u32, height: u32) {
+        self.config.width = width;
+        self.config.height = height;
+        self.surface.configure(&self.device, &self.config);
+    }
 }
