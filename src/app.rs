@@ -2,10 +2,10 @@ use std::sync::Arc;
 
 use winit::{
     application::ApplicationHandler, 
-    window::{Window, WindowId},
-    event::*,
-    event_loop::ActiveEventLoop,
-    dpi
+    dpi, 
+    event::*, 
+    event_loop::ActiveEventLoop, 
+    window::{Window, WindowId}
 };
 
 use crate::graphics_context::WgpuContext;
@@ -23,24 +23,37 @@ impl<'app> ApplicationHandler for GvizorApp<'app> {
             event_loop.create_window(Window::default_attributes()).unwrap()
         ));
         self.graphics = Some(WgpuContext::from_window(self.window.as_ref().unwrap()));
+        self.window.as_ref().unwrap().request_redraw();
     }
 
-    fn window_event(&mut self, event_loop: &ActiveEventLoop, _window_id: WindowId, event: WindowEvent) {
-        match event {
-            WindowEvent::CloseRequested => event_loop.exit(),
-            WindowEvent::RedrawRequested => self.window.as_ref().unwrap().request_redraw(),
+    fn window_event(&mut self, event_loop: &ActiveEventLoop, window_id: WindowId, event: WindowEvent) {
+        let window = self.window.as_ref().unwrap();
+        let graphics = self.graphics.as_mut().unwrap();
 
-            WindowEvent::KeyboardInput { event, .. } => {
-                match event.state {
-                    ElementState::Pressed => event_loop.exit(),
-                    _ => ()
+        if window_id == window.id() {
+            match event {
+                WindowEvent::CloseRequested => event_loop.exit(),
+                WindowEvent::RedrawRequested => {
+                    match graphics.clear(54, 37, 89) {
+                        Ok(_) => (),
+                        Err(wgpu::SurfaceError::Lost) => self.resize(window.inner_size()),
+                        Err(wgpu::SurfaceError::OutOfMemory) => event_loop.exit(),
+                        Err(err) => eprintln!("{:?}", err)
+                    }
+                },
+    
+                WindowEvent::KeyboardInput { event, .. } => {
+                    match event.state {
+                        ElementState::Pressed => event_loop.exit(),
+                        _ => ()
+                    }
                 }
+    
+                WindowEvent::Resized(size) => self.resize(size),
+                WindowEvent::Moved(_) => self.window.as_ref().unwrap().request_redraw(),
+    
+                _ => ()
             }
-
-            WindowEvent::Resized(size) => self.resize(size),
-            WindowEvent::Moved(_) => self.window.as_ref().unwrap().request_redraw(),
-
-            _ => ()
         }
     }
 }

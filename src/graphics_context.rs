@@ -45,4 +45,35 @@ impl<'wnd> WgpuContext<'wnd> {
         self.config.height = height;
         self.surface.configure(&self.device, &self.config);
     }
+
+    pub fn clear(&mut self, r: u8, g:u8, b: u8) -> Result<(), wgpu::SurfaceError> {
+
+        let (r, g, b) = (r as f64 / 256.0, g as f64 / 256.0, b as f64 / 256.0);
+
+        let output = self.surface.get_current_texture()?;
+        let view = output.texture.create_view(&wgpu::TextureViewDescriptor::default());
+        let mut encoder = self.device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
+            label: Some("wgpu_render_command_encoder")
+        });
+
+        encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
+            label: Some("wgpu_render_pass"),
+            color_attachments: &[Some(wgpu::RenderPassColorAttachment {
+                view: &view,
+                resolve_target: None,
+                ops: wgpu::Operations {
+                    load: wgpu::LoadOp::Clear(wgpu::Color { r, g, b, a: 1.0 }),
+                    store: wgpu::StoreOp::Store
+                }
+            })],
+            depth_stencil_attachment: None,
+            timestamp_writes: None,
+            occlusion_query_set: None
+        });
+        
+        self.queue.submit(std::iter::once(encoder.finish()));
+        output.present();
+
+        Ok(())
+    }
 }
