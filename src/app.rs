@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use winit::{
     application::ApplicationHandler, 
     window::{Window, WindowId},
@@ -8,15 +10,18 @@ use winit::{
 use crate::graphics_state::GraphicsState;
 
 #[derive(Default)]
-pub struct GvizorApp<'a> {
-    window: Option<Window>,
-    graphics: Option<GraphicsState<'a>>
+pub struct GvizorApp<'app> {
+    window: Option<Arc<Window>>,
+    graphics: Option<GraphicsState<'app>>
 }
 
-impl<'a> ApplicationHandler for GvizorApp<'a> {
+impl<'app> ApplicationHandler for GvizorApp<'app> {
 
     fn resumed(&mut self, event_loop: &winit::event_loop::ActiveEventLoop) {
-        self.window = Some(event_loop.create_window(Window::default_attributes()).unwrap());
+        self.window = Some(Arc::new(
+            event_loop.create_window(Window::default_attributes()).unwrap()
+        ));
+        self.graphics = Some(GraphicsState::from_window(self.window.as_ref().unwrap()));
     }
 
     fn window_event(&mut self, event_loop: &ActiveEventLoop, _window_id: WindowId, event: WindowEvent) {
@@ -35,3 +40,4 @@ impl<'a> ApplicationHandler for GvizorApp<'a> {
         }
     }
 }
+
