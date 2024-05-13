@@ -46,9 +46,7 @@ impl<'wnd> WgpuContext<'wnd> {
         self.surface.configure(&self.device, &self.config);
     }
 
-    pub fn clear(&mut self, r: u8, g:u8, b: u8) -> Result<(), wgpu::SurfaceError> {
-
-        let (r, g, b) = (r as f64 / 256.0, g as f64 / 256.0, b as f64 / 256.0);
+    pub fn clear(&mut self, color: wgpu::Color) -> Result<(), wgpu::SurfaceError> {
 
         let output = self.surface.get_current_texture()?;
         let view = output.texture.create_view(&wgpu::TextureViewDescriptor::default());
@@ -62,7 +60,7 @@ impl<'wnd> WgpuContext<'wnd> {
                 view: &view,
                 resolve_target: None,
                 ops: wgpu::Operations {
-                    load: wgpu::LoadOp::Clear(wgpu::Color { r, g, b, a: 1.0 }),
+                    load: wgpu::LoadOp::Clear(color),
                     store: wgpu::StoreOp::Store
                 }
             })],
@@ -70,7 +68,7 @@ impl<'wnd> WgpuContext<'wnd> {
             timestamp_writes: None,
             occlusion_query_set: None
         });
-        
+
         self.queue.submit(std::iter::once(encoder.finish()));
         output.present();
 

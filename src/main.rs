@@ -4,6 +4,7 @@ use crate::app::GvizorApp;
 
 pub mod app;
 pub mod graphics_context;
+pub mod test_color;
 
 #[tokio::main]
 async fn main() {

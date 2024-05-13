@@ -9,11 +9,13 @@ use winit::{
 };
 
 use crate::graphics_context::WgpuContext;
+use crate::test_color::CursorDependColor;
 
 #[derive(Default)]
 pub struct GvizorApp<'app> {
     window: Option<Arc<Window>>,
-    graphics: Option<WgpuContext<'app>>
+    graphics: Option<WgpuContext<'app>>,
+    bg_color: wgpu::Color
 }
 
 impl<'app> ApplicationHandler for GvizorApp<'app> {
@@ -34,7 +36,7 @@ impl<'app> ApplicationHandler for GvizorApp<'app> {
             match event {
                 WindowEvent::CloseRequested => event_loop.exit(),
                 WindowEvent::RedrawRequested => {
-                    match graphics.clear(54, 37, 89) {
+                    match graphics.clear(self.bg_color) {
                         Ok(_) => (),
                         Err(wgpu::SurfaceError::Lost) => self.resize(window.inner_size()),
                         Err(wgpu::SurfaceError::OutOfMemory) => event_loop.exit(),
@@ -50,7 +52,12 @@ impl<'app> ApplicationHandler for GvizorApp<'app> {
                 }
     
                 WindowEvent::Resized(size) => self.resize(size),
-                WindowEvent::Moved(_) => self.window.as_ref().unwrap().request_redraw(),
+                WindowEvent::Moved(_) => window.request_redraw(),
+
+                WindowEvent::CursorMoved { position, .. } => {
+                    self.bg_color.update(position.x, position.y, window.inner_size().width, window.inner_size().height);
+                    window.request_redraw();
+                },
     
                 _ => ()
             }
