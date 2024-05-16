@@ -36,7 +36,7 @@ impl<'app> ApplicationHandler for GvizorApp<'app> {
             match event {
                 WindowEvent::CloseRequested => event_loop.exit(),
                 WindowEvent::RedrawRequested => {
-                    match graphics.clear(self.bg_color) {
+                    match graphics.render_triangle_test(self.bg_color) {
                         Ok(_) => (),
                         Err(wgpu::SurfaceError::Lost) => self.resize(window.inner_size()),
                         Err(wgpu::SurfaceError::OutOfMemory) => event_loop.exit(),
