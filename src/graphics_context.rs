@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use pollster::FutureExt;
 use wgpu::ColorTargetState;
 use winit::window::Window;
 
@@ -18,23 +19,22 @@ impl<'wnd> WgpuContext<'wnd> {
 
         let surface = instance.create_surface(window.clone()).unwrap();
 
-        let adapter = futures::executor::block_on(
-            instance.request_adapter(
+        let adapter = instance.request_adapter(
             &wgpu::RequestAdapterOptions {
                 power_preference: wgpu::PowerPreference::HighPerformance,
                 force_fallback_adapter: false,
                 compatible_surface: Some(&surface)
             }
-        )).unwrap();
+        ).block_on().unwrap();
 
-        let (device, queue) = futures::executor::block_on(adapter.request_device(
+        let (device, queue) = adapter.request_device(
             &wgpu::DeviceDescriptor {
                 label: Some("Render Device"),
                 required_features: wgpu::Features::empty(),
                 required_limits: wgpu::Limits::default()
             }, 
             None
-        )).unwrap();
+        ).block_on().unwrap();
 
         let size = window.inner_size();
         let config = surface.get_default_config(&adapter, size.width, size.height).unwrap();

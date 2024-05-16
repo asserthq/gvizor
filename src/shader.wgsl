@@ -17,5 +17,5 @@ fn vs_main(
 fn fs_main(
     in: VertexOutput
 ) -> @location(0) vec4<f32> {
-    return vec4<f32>(1.0, 0.757, 0.02, 1.0);
+    return vec4<f32>(1.0, 0.73, 0.02, 1.0);
 }

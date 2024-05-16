@@ -6,9 +6,8 @@ pub mod app;
 pub mod graphics_context;
 pub mod test_color;
 
-#[tokio::main]
-async fn main() {
-    env_logger::init();
+
+fn main() {
     let event_loop = EventLoop::new().unwrap();
     event_loop.set_control_flow(ControlFlow::Poll);
     let mut app = GvizorApp::default();
